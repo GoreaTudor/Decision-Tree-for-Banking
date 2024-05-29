@@ -4,7 +4,7 @@ from typing import List
 from data.bank_marketing import BankMarketing
 
 
-def split(data: List[BankMarketing], debug: bool = True):
+def split(data: List[BankMarketing], debug=True):
     # 90% - training, 10% - testing
     training = []
     testing = []
@@ -22,7 +22,7 @@ def split(data: List[BankMarketing], debug: bool = True):
     return training, testing
 
 
-def load_csv(file_path: str):
+def load_csv(file_path: str, debug=True):
     data = []
 
     with open(file_path, 'r') as file:
@@ -50,4 +50,4 @@ def load_csv(file_path: str):
                 y=tokens[16] == '"yes"'
             ))
 
-    return split(data)
+    return split(data, debug)

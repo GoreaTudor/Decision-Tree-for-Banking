@@ -33,7 +33,7 @@ fun split(
     return Pair(training, testing)
 }
 
-fun loadCSV(filePath: String): Pair<List<BankMarketing>, List<BankMarketing>> {
+fun loadCSV(filePath: String, debug: Boolean = true): Pair<List<BankMarketing>, List<BankMarketing>> {
     val data = mutableListOf<BankMarketing>()
 
     File(filePath).bufferedReader().use { reader ->
@@ -65,5 +65,5 @@ fun loadCSV(filePath: String): Pair<List<BankMarketing>, List<BankMarketing>> {
         }
     }
 
-    return split(data, debug = true)
+    return split(data, debug)
 }

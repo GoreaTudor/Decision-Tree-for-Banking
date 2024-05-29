@@ -4,23 +4,46 @@ import data.loadCSV
 import org.example.data.BankMarketing
 import org.example.tree.DecisionTree
 import org.example.tree.Node
-import kotlin.system.measureTimeMillis
-import kotlin.time.Duration
+import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
 
 fun main() {
-    val (training, testing) = loadCSV(".\\src\\main\\resources\\bank.csv")
+    run(20)
+}
 
-    var decisionTree: DecisionTree?
-    var tree: Node?
 
-    val time = measureTime {
-        decisionTree = DecisionTree(training) { it.y }
-        tree = decisionTree!!.buildTree()
+fun run(times: Int = 1) {
+    var avgPercentage: Double = 0.0
+    var avgTime: Double = 0.0
+
+    for (i in 1..times) {
+        val (training, testing) = loadCSV(".\\src\\main\\resources\\bank.csv", debug = false)
+
+        var decisionTree: DecisionTree?
+        var tree: Node?
+
+        val duration = measureTime {
+            decisionTree = DecisionTree(training) { it.y }
+            tree = decisionTree!!.buildTree()
+        }
+
+        val correct = test(decisionTree!!, tree!!, testing, debug = false)
+        val percentage = correct.toDouble() / testing.size.toDouble() * 100.0
+
+        avgPercentage += percentage
+        avgTime += duration.toDouble(DurationUnit.MILLISECONDS)
+
+        // Run info
+        println("$i. p: $percentage%, t: $duration")
     }
 
-    test(decisionTree!!, tree!!, testing, time, debug = false)
+    avgPercentage /= times
+    avgTime /= times
+
+    // Result info
+    println("\n>> Avg. Percentage: $avgPercentage%")
+    println(">> Avg. Time: ${avgTime}ms")
 }
 
 
@@ -28,9 +51,8 @@ fun test(
     decisionTree: DecisionTree,
     tree: Node,
     data: List<BankMarketing>,
-    time: Duration,
     debug: Boolean = true
-) {
+): Int {
     var countCorrect = 0
 
     data.forEach {
@@ -47,9 +69,5 @@ fun test(
         }
     }
 
-    println("\n\n>> Tested: ${data.size}")
-    println(">> Correct: $countCorrect")
-    println(">> Wrong: ${data.size - countCorrect}")
-    println("\n>> Correct Percentage: ${countCorrect.toDouble() / data.size.toDouble() * 100}%")
-    println(">> Time: $time")
+    return countCorrect
 }

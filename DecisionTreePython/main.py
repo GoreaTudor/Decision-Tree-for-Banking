@@ -7,7 +7,7 @@ from tree.decision_tree import DecisionTree
 from tree.node import Node
 
 
-def test(decision_tree: DecisionTree, tree: Node, data: List[BankMarketing], time, debug=True):
+def test(decision_tree: DecisionTree, tree: Node, data: List[BankMarketing], debug=True):
     count_correct = 0
 
     for item in data:
@@ -21,21 +21,38 @@ def test(decision_tree: DecisionTree, tree: Node, data: List[BankMarketing], tim
         if prediction == item.y:
             count_correct += 1
 
-    print(f"\n\n>> Tested: {len(data)}")
-    print(f">> Correct: {count_correct}")
-    print(f">> Wrong: {len(data) - count_correct}")
-    print(f"\n>> Correct Percentage: {count_correct / len(data) * 100}%")
-    print(f">> Time: {time}ms")
+    return count_correct
+
+
+def run(times=1):
+    avg_percentage = 0.0
+    avg_time = 0.0
+
+    for i in range(times):
+        training, testing = load_csv(".\\data\\bank.csv", debug=False)
+
+        start = time.time()
+        decision_tree = DecisionTree(training, lambda x: x.y)
+        tree = decision_tree.build_tree()
+        end = time.time()
+
+        duration = (end - start) * 1_000.0  # seconds to ms
+        correct = test(decision_tree, tree, testing, debug=False)
+        percentage = (correct / len(testing)) * 100.0
+
+        avg_percentage = avg_percentage + percentage
+        avg_time = avg_time + duration
+
+        # Run info
+        print(f"{i + 1}. p: {percentage}%, t: {duration}ms")
+
+    avg_percentage = avg_percentage / times
+    avg_time = avg_time / times
+
+    # Result info
+    print(f"\n>> Avg. Percentage: {avg_percentage}%")
+    print(f">> Avg. Time: {avg_time}ms")
 
 
 if __name__ == "__main__":
-    training, testing = load_csv(".\\data\\bank.csv")
-
-    start = time.time()
-    decision_tree = DecisionTree(training, lambda x: x.y)
-    tree = decision_tree.build_tree()
-    end = time.time()
-
-    duration = (end - start) * 1_000.0
-
-    test(decision_tree, tree, testing, duration, debug=False)
+    run(times=20)
