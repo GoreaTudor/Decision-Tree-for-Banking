@@ -12,14 +12,12 @@ fun main() {
     val decisionTree = DecisionTree(training) { it.y }
     val tree = decisionTree.buildTree()
 
-    println(training[10])
-
-    test(tree, decisionTree, testing, debug = true)
+    test(decisionTree, tree, testing, debug = true)
 }
 
 fun test(
-    tree: Node,
     decisionTree: DecisionTree,
+    tree: Node,
     data: List<BankMarketing>,
     debug: Boolean = true
 ) {
@@ -39,5 +37,8 @@ fun test(
         }
     }
 
-    println("Result: ${countCorrect.toDouble() / data.size.toDouble() * 100}%")
+    println("\n\n>> Tested: ${data.size}")
+    println(">> Correct: $countCorrect")
+    println(">> Wrong: ${data.size - countCorrect}")
+    println("\n>> Percentage: ${countCorrect.toDouble() / data.size.toDouble() * 100}%")
 }
